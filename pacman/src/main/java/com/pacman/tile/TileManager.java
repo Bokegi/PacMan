@@ -24,8 +24,6 @@ public class TileManager {
     private final String powerFoodPath = "pacman/res/Object/powerFood.png";
     private final String foodPath = "pacman/res/Object/food.png";
 
-    public int pacManStartX, pacManStartY; // Coordinate di partenza di PacMan
-
     public TileManager(GamePanel gamePanel) {
         this.gp = gamePanel;
         tile = new Tile[10];
@@ -38,11 +36,11 @@ public class TileManager {
         try {
             tile[0] = new Tile(); // Wall
             tile[0].img = ImageIO.read(new File(wallPath));
+            tile[0].collision = true;
             System.out.println("Wall loaded: " + (tile[0].img != null));
             
             tile[1] = new Tile(); // Empty space (no collision)
             tile[1].img = ImageIO.read(new File(foodPath));
-            tile[1].collision = true;
             System.out.println("Food loaded: " + (tile[1].img != null));
             
             tile[2] = new Tile(); // PowerFood (no collision)
@@ -85,7 +83,6 @@ public class TileManager {
     
                 while (col < gp.screenCol) { 
                     if (line == null || line.isEmpty() || line.startsWith("//")) { 
-                        col++;
                         continue;
                     }
                     String[] numbArr = line.split(" ");
@@ -105,7 +102,6 @@ public class TileManager {
         }
     }  
     
-
     public void draw(Graphics2D g2){
         int col = 0;
         int row = 0;
