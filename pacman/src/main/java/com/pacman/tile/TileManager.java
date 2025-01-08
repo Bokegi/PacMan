@@ -48,7 +48,24 @@ public class TileManager {
             tile[2] = new Tile(); // PowerFood (no collision)
             tile[2].img = ImageIO.read(new File(powerFoodPath));
             System.out.println("PowerFood loaded: " + (tile[2].img != null));
-            // Continua per le altre immagini...
+            
+            tile[3] = new Tile(); 
+            tile[3].img = null;
+            
+            tile[4] = new Tile(); 
+            tile[4].img = null;
+
+            tile[5] = new Tile(); 
+            tile[5].img = null;
+
+            tile[6] = new Tile(); 
+            tile[6].img = null;
+
+            tile[7] = new Tile(); 
+            tile[7].img = null;
+
+            tile[8] = new Tile(); 
+            tile[8].img = null;
     
         } catch (IOException e) {
             e.printStackTrace();
