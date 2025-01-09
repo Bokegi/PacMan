@@ -13,10 +13,10 @@ import com.pacman.Game.GamePanel;
 
 public class Ghost extends Entity{
 
-    private final String blueGhostPath = "pac-man/res/Ghost/blueGhost.png";
-    private final String orangeGhostPath = "pac-man/res/Ghost/orangeGhost.png";
-    private final String pinkGhostPath = "pac-man/res/Ghost/pinkGhost.png";
-    private final String redGhostPath = "pac-man/res/Ghost/redGhost.png";
+    private final String blueGhostPath = "pacman/res/Ghost/blueGhost.png";
+    private final String orangeGhostPath = "pacman/res/Ghost/orangeGhost.png";
+    private final String pinkGhostPath = "pacman/res/Ghost/pinkGhost.png";
+    private final String redGhostPath = "pacman/res/Ghost/redGhost.png";
 
     private BufferedImage blueGhost, orangeGhost, pinkGhost, redGhost;
     private BufferedImage currentImage;
@@ -24,6 +24,8 @@ public class Ghost extends Entity{
 
     GamePanel gp;
     private Random random;
+
+    private long lastUpdate;
 
     public Ghost(GamePanel gp, int startX, int startY, String color) {
         this.gp = gp;
@@ -37,10 +39,11 @@ public class Ghost extends Entity{
         setDefaultValue();
         getGhostImg();
         setCurrentImage();
+        lastUpdate = System.currentTimeMillis();
     }
 
     private void setDefaultValue() {
-        speed = 4;
+        speed = gp.tileSize;
     }
 
     public void getGhostImg() {
@@ -80,21 +83,25 @@ public class Ghost extends Entity{
     }
 
     public void update() {
-        int direction = random.nextInt(4);
-
-        switch (direction) {
-            case 0: // Move up
-                entityY -= speed;
-                break;
-            case 1: // Move down
-                entityY += speed;
-                break;
-            case 2: // Move left
-                entityX -= speed;
-                break;
-            case 3: // Move right
-                entityX += speed;
-                break;
+        long currentTime = System.currentTimeMillis();
+        if(currentTime - lastUpdate >= 700){
+            int direction = random.nextInt(4);
+    
+            switch (direction) {
+                case 0: // Move up
+                    entityY -= speed;
+                    break;
+                case 1: // Move down
+                    entityY += speed;
+                    break;
+                case 2: // Move left
+                    entityX -= speed;
+                    break;
+                case 3: // Move right
+                    entityX += speed;
+                    break;
+            }
+            lastUpdate = currentTime;
         }
     }
 }

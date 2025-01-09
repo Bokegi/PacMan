@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
+import com.pacman.entity.Ghost;
 import com.pacman.tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable{
@@ -21,10 +22,12 @@ public class GamePanel extends JPanel implements Runnable{
     public int screenHeight = screenRow * tileSize;
 
     int fps = 60;
+    public int score = 0;
 
-    TileManager tileManager = new TileManager(this);
     public KeyHandler keyH = new KeyHandler();
+    public TileManager tileManager = new TileManager(this);
     Thread gameThread;
+    public CollisionDetecter cDetect = new CollisionDetecter(this);
 
     public GamePanel() {
 
@@ -65,6 +68,10 @@ public class GamePanel extends JPanel implements Runnable{
     }
 
     private void update() {
+        tileManager.pacMan.update();
+        for(Ghost ghost : tileManager.ghosts){
+            ghost.update();
+        }
     }
 
     @Override
@@ -74,6 +81,10 @@ public class GamePanel extends JPanel implements Runnable{
         Graphics2D g2 = (Graphics2D) g;
 
         tileManager.draw(g2);
+        tileManager.pacMan.draw(g2);
+
+        g2.setColor(Color.WHITE);
+        g2.drawString("Score: " + score, 10, 20);
         g2.dispose();
     }
 

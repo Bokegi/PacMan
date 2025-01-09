@@ -24,87 +24,77 @@ public class PacMan extends Entity{
     private int hP;
 
     private GamePanel gp;
-    public KeyHandler keyH;
+    private KeyHandler keyH;
 
-    public PacMan(GamePanel gp, KeyHandler keyH, int startX, int startY){      
-        this.gp = gp;
-        this.keyH = keyH;
+    private boolean isMoving;
+    private boolean isDead;
+    private int targetX, targetY;
 
-        this.entityX = startX;
-        this.entityY = startY;
-
-        hitBox = new Rectangle(12, 10, gp.tileSize, gp.tileSize);
-
-        setDefaultValue();
-        getPlayerImg();
-    }
-private void setDefaultValue() {
-        hP = 3;
-        speed = 2;
-        direction = "right";
-    }
-
-    public void getPlayerImg() {
-        try {
-            pacManUp = ImageIO.read(new File(pacManUpPath));
-            pacManDown = ImageIO.read(new File(pacManDownPath));
-            pacManLeft = ImageIO.read(new File(pacManLeftPath));
-            pacManRight = ImageIO.read(new File(pacManRightPath));
-            pacManClose = ImageIO.read(new File(pacManClosePath));
-
-        } catch (IOException ex) {
-            System.out.println("Cannot load PacMan image: " + ex.getMessage());
-        }
-    }
+    private long lastMoveTime;
     
-
-    public void draw(Graphics2D g2){
-        BufferedImage img = null;
-
-        switch(direction){
-            case "up":
-                if(spriteNum == 1){
-                    img = pacManUp;
-                }else if(spriteNum == 2){
-                    img = pacManClose;
-                }
-            break;
-            
-            case "down":
-                if(spriteNum == 1){
-                    img = pacManDown;
-                }else if(spriteNum == 2){
-                    img = pacManClose;
-                }
-            break;
-            
-            case "left":
-                if(spriteNum == 1){
-                    img = pacManLeft;
-                }else if(spriteNum == 2){
-                    img = pacManClose;
-                }
-            break;
-            
-            case "right":
-                if(spriteNum == 1){
-                    img = pacManRight;
-                }else if(spriteNum == 2){
-                    img = pacManClose;
-                }   
-            break;
+        public PacMan(GamePanel gp, KeyHandler keyH, int startX, int startY) {
+            this.gp = gp;
+            this.keyH = keyH;
+    
+            this.entityX = startX;
+            this.entityY = startY;
+            this.targetX = startX;
+            this.targetY = startY;
+    
+            hitBox = new Rectangle(0, 0, 32, 32);
+    
+            setDefaultValue();
+            getPlayerImg();
+            lastMoveTime = System.currentTimeMillis();
         }
-        if (img != null) { 
-            g2.drawImage(img, entityX, entityY, gp.tileSize, gp.tileSize, null); 
-        } else { 
-            System.out.println("PacMan image is null"); 
+    
+        private void setDefaultValue() {
+            hP = 3;
+            speed = gp.tileSize;  // Imposta la velocità pari alla dimensione di una casella
+            direction = "right";
+            isMoving = false;
         }
-    }
-
-    public void update() {
-        collisionOn = false;
-
-        if (keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed) {
+    
+        public void getPlayerImg() {
+            try {
+                pacManUp = ImageIO.read(new File(pacManUpPath));
+                pacManDown = ImageIO.read(new File(pacManDownPath));
+                pacManLeft = ImageIO.read(new File(pacManLeftPath));
+                pacManRight = ImageIO.read(new File(pacManRightPath));
+                pacManClose = ImageIO.read(new File(pacManClosePath));
+            } catch (IOException ex) {
+                System.out.println("Cannot load PacMan image: " + ex.getMessage());
+            }
+        }
+    
+        public void draw(Graphics2D g2) {
+            BufferedImage img = null;
+    
+            switch (direction) {
+                case "up":
+                    img = (spriteNum == 1) ? pacManUp : pacManClose;
+                    break;
+                case "down":
+                    img = (spriteNum == 1) ? pacManDown : pacManClose;
+                    break;
+                case "left":
+                    img = (spriteNum == 1) ? pacManLeft : pacManClose;
+                    break;
+                case "right":
+                    img = (spriteNum == 1) ? pacManRight : pacManClose;
+                    break;
+            }
+            g2.drawImage(img, entityX, entityY, gp.tileSize, gp.tileSize, null);
+        }
+    
+        public void update() {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastMoveTime >= 700) {  // Controlla se è passato un secondo
+                move();
+                lastMoveTime = currentTime;  // Aggiorna l'ora dell'ultimo movimento
+            }
+    
+            // Gestisci l'input dell'utente per cambiare direzione
             if (keyH.upPressed) {
                 direction = "up";
             }
@@ -118,44 +108,58 @@ private void setDefaultValue() {
                 direction = "right";
             }
     
-            // Verifica della collisione
-            //gp.cDetect.checkTile(this);
+            checkFoodCollision();
+        }
     
-            // Se non c'è collisione, muovi il giocatore
-            if (collisionOn == false) {
-                switch (direction) {
-                    case "up":
-                        if (entityY - speed >= 0) {
-                            entityY -= speed;
-                        }
-                        break;
-                    case "down":
-                        if (entityY + speed < gp.screenHeight) {
-                            entityY += speed;
-                        }
-                        break;
-                    case "left":
-                        if (entityX - speed >= 0) {
-                            entityX -= speed;
-                        }
-                        break;
-                    case "right":
-                        if (entityX + speed < gp.screenWidth) {
-                            entityX += speed;
-                        }
-                        break;
-                }
+        private void move() {
+            // Calcola le nuove coordinate target in base alla direzione
+            switch (direction) {
+                case "up":
+                    targetY = entityY - speed;
+                    break;
+                case "down":
+                    targetY = entityY + speed;
+                    break;
+                case "left":
+                    targetX = entityX - speed;
+                    break;
+                case "right":
+                    targetX = entityX + speed;
+                    break;
             }
-
+            // Verifica collisione con le caselle
+            collisionOn = false;
+            gp.cDetect.checkTile(this);
+    
+            // Se non c'è collisione, aggiorna la posizione di Pac-Man
+            if (!collisionOn) {
+                entityX = targetX;
+                entityY = targetY;
+            } else {
+                // Se c'è collisione, rimani nella posizione attuale
+                targetX = entityX;
+                targetY = entityY;
+            }
+        }
+    
+        private void checkFoodCollision() {
+            int col = (entityX + hitBox.x) / gp.tileSize;
+            int row = (entityY + hitBox.y) / gp.tileSize;
+            if (gp.tileManager.mapTileNum[col][row] == 1) {  // 1 = cibo
+                gp.tileManager.mapTileNum[col][row] = 8;  // Rimuove il cibo
+                gp.score += 10;  // Incrementa il punteggio
+                System.out.println("Score: " + gp.score);  // Stampa il punteggio per debug
+            }else if (gp.tileManager.mapTileNum[col][row] == 2) {  // 2 = powerFood
+                gp.tileManager.mapTileNum[col][row] = 8;  // Rimuove il cibo
+                gp.score += 50;  // Incrementa il punteggio
+                System.out.println("Score: " + gp.score);  // Stampa il punteggio per debug
+            }
+    
             spriteCounter++;
-            if(spriteCounter > 12){
-                if(spriteNum == 1){
-                    spriteNum = 2;
-                }else if(spriteNum == 2){
-                    spriteNum = 1;
-                }
+            if (spriteCounter > 12) {
+                spriteNum = (spriteNum == 1) ? 2 : 1;
                 spriteCounter = 0;
             }
         }
     }
-}
+    
