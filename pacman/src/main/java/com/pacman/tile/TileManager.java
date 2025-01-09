@@ -1,6 +1,7 @@
 package com.pacman.tile;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +28,8 @@ public class TileManager {
     public PacMan pacMan;
     public Ghost[] ghosts;
 
+    public Rectangle wallHitBox;  
+
     public TileManager(GamePanel gp) {
         this.gp = gp;
         tile = new Tile[10];
@@ -34,6 +37,8 @@ public class TileManager {
         ghosts = new Ghost[4]; // Inizializza array per i fantasmi
         getTileImg();
         loadMap("pacman/res/Map/Map02.txt");
+
+        wallHitBox = new Rectangle(0, 0, gp.tileSize, gp.tileSize); 
     }
 
     private void getTileImg() {
