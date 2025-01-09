@@ -34,8 +34,6 @@ public class Ghost extends Entity{
         this.color = color;
         this.random = new Random();
 
-        hitBox = new Rectangle(30, 30, 32, 32);
-
         setDefaultValue();
         getGhostImg();
         setCurrentImage();
@@ -43,7 +41,9 @@ public class Ghost extends Entity{
     }
 
     private void setDefaultValue() {
+        direction = "down";
         speed = gp.tileSize;
+        hitBox = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
     }
 
     public void getGhostImg() {
@@ -83,25 +83,39 @@ public class Ghost extends Entity{
     }
 
     public void update() {
-        long currentTime = System.currentTimeMillis();
-        if(currentTime - lastUpdate >= 700){
-            int direction = random.nextInt(4);
-    
+        // Aggiorna la posizione della hitbox in base alla posizione dell'entità
+        this.hitBox.x = this.entityX;
+        this.hitBox.y = this.entityY;
+
+        if (!gp.cDetect.checkCollision(this)) {
             switch (direction) {
-                case 0: // Move up
+                case "up":
                     entityY -= speed;
                     break;
-                case 1: // Move down
+                case "down":
                     entityY += speed;
                     break;
-                case 2: // Move left
+                case "left":
                     entityX -= speed;
                     break;
-                case 3: // Move right
+                case "right":
                     entityX += speed;
                     break;
             }
-            lastUpdate = currentTime;
+        } else {
+            changeDirection();
         }
+    }
+
+    public void changeDirection() {
+        String[] directions = {"up", "down", "left", "right"};
+        String newDirection;
+
+        // Cambia direzione finché non si trova una direzione valida (non in collisione)
+        do {
+            newDirection = directions[(int) (Math.random() * directions.length)];
+        } while (newDirection.equals(direction) || gp.cDetect.checkCollisionWithDirection(this, newDirection));
+
+        direction = newDirection;
     }
 }

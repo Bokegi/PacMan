@@ -27,6 +27,7 @@ public class CollisionDetecter {
         int ghostTopRow = ghostTopWorldY / gp.tileSize;
         int ghostBottomRow = ghostBottomWorldY / gp.tileSize;
 
+        // Verifica che il fantasma sia all'interno dei limiti della mappa
         if (ghostLeftCol < 0 || ghostRightCol >= gp.screenCol || ghostTopRow < 0 || ghostBottomRow >= gp.screenRow) {
             return true; // Se il fantasma è fuori dai limiti, considera una collisione
         }
@@ -83,4 +84,3 @@ public class CollisionDetecter {
         return collision;
     }
 }
-
