@@ -33,6 +33,8 @@ public class Ghost extends Entity{
         this.entityY = startY;
         this.color = color;
         this.random = new Random();
+        
+        this.hitBox = super.hitBox;
 
         setDefaultValue();
         getGhostImg();
@@ -43,7 +45,6 @@ public class Ghost extends Entity{
     private void setDefaultValue() {
         direction = "down";
         speed = gp.tileSize;
-        hitBox = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
     }
 
     public void getGhostImg() {
@@ -87,7 +88,9 @@ public class Ghost extends Entity{
         this.hitBox.x = this.entityX;
         this.hitBox.y = this.entityY;
 
-        if (!gp.cDetect.checkCollision(this)) {
+        // Nella classe Ghost (nel metodo update):
+        Rectangle nextHitBox = new Rectangle(entityX, entityY, hitBox.width, hitBox.height);
+        if (!gp.tileManager.checkCollision(nextHitBox)) {
             switch (direction) {
                 case "up":
                     entityY -= speed;
@@ -110,11 +113,7 @@ public class Ghost extends Entity{
     public void changeDirection() {
         String[] directions = {"up", "down", "left", "right"};
         String newDirection;
-
-        // Cambia direzione finché non si trova una direzione valida (non in collisione)
-        do {
-            newDirection = directions[(int) (Math.random() * directions.length)];
-        } while (newDirection.equals(direction) || gp.cDetect.checkCollisionWithDirection(this, newDirection));
+        newDirection = directions[(int) (Math.random() * directions.length)];
 
         direction = newDirection;
     }

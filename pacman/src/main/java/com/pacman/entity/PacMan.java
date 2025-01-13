@@ -41,7 +41,7 @@ public class PacMan extends Entity{
         this.targetX = startX;
         this.targetY = startY;
 
-        hitBox = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
+        this.hitBox = super.hitBox;
 
         setDefaultValue();
         getPlayerImg();
@@ -50,7 +50,8 @@ public class PacMan extends Entity{
 
     private void setDefaultValue() {
         hP = 3;
-        speed = gp.tileSize;  // Imposta la velocità pari alla dimensione di una casella
+        speed = gp.tileSize;
+        //speed = gp.tileSize;  // Imposta la velocità pari alla dimensione di una casella
         direction = "right";
         isMoving = false;
     }
@@ -109,11 +110,11 @@ public class PacMan extends Entity{
 
         checkFoodCollision();
     }
-    
-            
 
     private void move() {
-        // Calcola le nuove coordinate target in base alla direzione
+        
+        Rectangle nextHitBox = new Rectangle(targetX, targetY, hitBox.width, hitBox.height);
+
         switch (direction) {
             case "up":
                 targetY = entityY - speed;
@@ -130,12 +131,12 @@ public class PacMan extends Entity{
         }
         // Verifica collisione con le caselle
         collisionOn = false;
-        //gp.cDetect.checkTile(this);
+        gp.cDetect.checkCollision(this);
 
         // Se non c'è collisione, aggiorna la posizione di Pac-Man
-        if (collisionOn == false) {
+        if (!gp.tileManager.checkCollision(nextHitBox)) {
             entityX = targetX;
-            entityY = targetY;
+            entityY = targetY;     
         } else {
             // Se c'è collisione, rimani nella posizione attuale
             targetX = entityX;
@@ -144,8 +145,32 @@ public class PacMan extends Entity{
     }
 
     private void checkFoodCollision() {
+
         int col = (entityX + hitBox.x) / gp.tileSize;
         int row = (entityY + hitBox.y) / gp.tileSize;
+
+        if (gp.tileManager.mapTileNum[col][row] == 1) {  // 1 = cibo
+            gp.tileManager.mapTileNum[col][row] = 8;  // Rimuove il cibo
+            gp.score += 10;  // Incrementa il punteggio
+            System.out.println("Score: " + gp.score);  // Stampa il punteggio per debug
+        }else if (gp.tileManager.mapTileNum[col][row] == 2) {  // 2 = powerFood
+            gp.tileManager.mapTileNum[col][row] = 8;  // Rimuove il cibo
+            gp.score += 50;  // Incrementa il punteggio
+            System.out.println("Score: " + gp.score);  // Stampa il punteggio per debug
+        }
+
+        spriteCounter++;
+        if (spriteCounter > 12) {
+            spriteNum = (spriteNum == 1) ? 2 : 1;
+            spriteCounter = 0;
+        }
+    }
+
+    private void checkWallCollision() {
+
+        int col = (entityX + hitBox.x) / gp.tileSize;
+        int row = (entityY + hitBox.y) / gp.tileSize;
+
         if (gp.tileManager.mapTileNum[col][row] == 1) {  // 1 = cibo
             gp.tileManager.mapTileNum[col][row] = 8;  // Rimuove il cibo
             gp.score += 10;  // Incrementa il punteggio
@@ -163,4 +188,3 @@ public class PacMan extends Entity{
         }
     }
 }
-    

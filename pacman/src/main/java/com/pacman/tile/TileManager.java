@@ -45,7 +45,7 @@ public class TileManager {
         try {
             tile[0] = new Tile(); // Wall
             tile[0].img = ImageIO.read(new File(wallPath));
-            //tile[0].collision = true;
+            tile[0].collision = true;
             
             tile[1] = new Tile(); // Empty space (no collision)
             tile[1].img = ImageIO.read(new File(foodPath));
@@ -79,6 +79,7 @@ public class TileManager {
     }
     
     public void loadMap(String mapPath1) {
+        
         try {
             InputStream is = new FileInputStream(mapPath1);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -157,4 +158,18 @@ public class TileManager {
             }
         }
     }
+
+    public boolean checkCollision(Rectangle hitBox) {
+        int leftTile = hitBox.x / gp.tileSize;
+        int rightTile = (hitBox.x + hitBox.width) / gp.tileSize;
+        int topTile = hitBox.y / gp.tileSize;
+        int bottomTile = (hitBox.y + hitBox.height) / gp.tileSize;
+    
+        if (mapTileNum[leftTile][topTile] == 0 || mapTileNum[rightTile][topTile] == 0 ||
+            mapTileNum[leftTile][bottomTile] == 0 || mapTileNum[rightTile][bottomTile] == 0) {
+            return true; // C'è una collisione
+        }
+        return false; // Nessuna collisione
+    }
+    
 }

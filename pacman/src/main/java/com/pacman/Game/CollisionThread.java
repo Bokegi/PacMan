@@ -4,15 +4,38 @@ import com.pacman.entity.Ghost;
 import com.pacman.entity.PacMan;
 import com.pacman.tile.TileManager;
 
-public class CollisionDetecter {
+public class CollisionThread {
+    
     GamePanel gp;
     TileManager tileManager;
-    CollisionThread thread;
 
-    public CollisionDetecter(GamePanel gp) {
+    int fps = 60;
+
+    public CollisionThread(GamePanel gp){
         this.gp = gp;
-        this.tileManager = gp.tileManager;
+        collision();
     }
+
+    public void collision() {
+
+        double drawInterval = 1000000000 / fps;
+        double delta = 0;
+        long lastTime = System.nanoTime();
+        long currentTime;
+
+        while (true) {
+
+            currentTime = System.nanoTime();
+
+            delta += (currentTime - lastTime) / drawInterval;
+            lastTime = currentTime;
+
+            if (delta >= 1) {
+                
+            }
+        }
+    }
+
 
     // Check collision for Pac-Man
     public boolean checkCollision(PacMan pacMan) {

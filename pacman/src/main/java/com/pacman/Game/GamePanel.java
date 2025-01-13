@@ -32,17 +32,21 @@ public class GamePanel extends JPanel implements Runnable{
     public TileManager tileManager;
     Thread gameThread;
     public CollisionDetecter cDetect;
+    public CollisionThread cThread;
+
+    public static GamePanel gp; 
 
     public GamePanel() {
 
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
-
+        
         this.addKeyListener(keyH);
         this.setFocusable(true);
         tileManager = new TileManager(this);
         cDetect = new CollisionDetecter(this);
+        cThread = new CollisionThread(this);
     }
 
     public void startGameThread() {
@@ -69,6 +73,9 @@ public class GamePanel extends JPanel implements Runnable{
                 update();
                 repaint();
                 delta--;
+
+                cThread.collision();
+
             }
         }
     }
