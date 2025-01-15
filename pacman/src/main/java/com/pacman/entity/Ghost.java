@@ -33,8 +33,7 @@ public class Ghost extends Entity{
         this.entityY = startY;
         this.color = color;
         this.random = new Random();
-        
-        this.hitBox = super.hitBox;
+        hitBox = new Rectangle(0, 0, 20, 20);
 
         setDefaultValue();
         getGhostImg();
@@ -44,10 +43,10 @@ public class Ghost extends Entity{
 
     private void setDefaultValue() {
         direction = "down";
-        speed = gp.tileSize;
+        speed = 10;
     }
 
-    public void getGhostImg() {
+    private void getGhostImg() {
         try {
             blueGhost = ImageIO.read(new File(blueGhostPath));
             orangeGhost = ImageIO.read(new File(orangeGhostPath));
@@ -84,37 +83,21 @@ public class Ghost extends Entity{
     }
 
     public void update() {
-        // Aggiorna la posizione della hitbox in base alla posizione dell'entità
-        this.hitBox.x = this.entityX;
-        this.hitBox.y = this.entityY;
+        collisionOn = false;
+        gp.cDetect.checkTile(this);
 
-        // Nella classe Ghost (nel metodo update):
-        Rectangle nextHitBox = new Rectangle(entityX, entityY, hitBox.width, hitBox.height);
-        if (!gp.tileManager.checkCollision(nextHitBox)) {
+        if(collisionOn == false){
             switch (direction) {
-                case "up":
-                    entityY -= speed;
-                    break;
-                case "down":
-                    entityY += speed;
-                    break;
-                case "left":
-                    entityX -= speed;
-                    break;
-                case "right":
-                    entityX += speed;
-                    break;
+                case "up" -> entityY -= speed;
+                case "down" -> entityY += speed;
+                case "left" -> entityX -= speed;
+                case "right" -> entityX += speed;
             }
-        } else {
-            changeDirection();
         }
     }
 
-    public void changeDirection() {
+    private void changeDirection() {
         String[] directions = {"up", "down", "left", "right"};
-        String newDirection;
-        newDirection = directions[(int) (Math.random() * directions.length)];
-
-        direction = newDirection;
+        direction = directions[random.nextInt(directions.length)];
     }
 }

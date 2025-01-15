@@ -36,9 +36,9 @@ public class TileManager {
         mapTileNum = new int[gp.screenCol][gp.screenRow];
         ghosts = new Ghost[4]; // Inizializza array per i fantasmi
         getTileImg();
-        loadMap("pacman/res/Map/Map02.txt");
+        loadMap("pacman/res/Map/Map01.txt");
 
-        wallHitBox = new Rectangle(0, 0, gp.tileSize, gp.tileSize); 
+        wallHitBox = new Rectangle(0, 0, 10, 10); 
     }
 
     private void getTileImg() {
@@ -159,7 +159,7 @@ public class TileManager {
         }
     }
 
-    public boolean checkCollision(Rectangle hitBox) {
+    /* public boolean checkCollision(Rectangle hitBox) {
         int leftTile = hitBox.x / gp.tileSize;
         int rightTile = (hitBox.x + hitBox.width) / gp.tileSize;
         int topTile = hitBox.y / gp.tileSize;
@@ -170,6 +170,5 @@ public class TileManager {
             return true; // C'è una collisione
         }
         return false; // Nessuna collisione
-    }
-    
+    } */ 
 }
