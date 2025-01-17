@@ -102,12 +102,6 @@ public class PacMan extends Entity{
             gp.score += 50;  // Incrementa il punteggio
             System.out.println("Score: " + gp.score);  // Stampa il punteggio per debug
         }
-
-        spriteCounter++;
-        if (spriteCounter > 12) {
-            spriteNum = (spriteNum == 1) ? 2 : 1;
-            spriteCounter = 0;
-        }
     }
 
     public void update(){
