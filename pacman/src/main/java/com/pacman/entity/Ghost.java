@@ -43,7 +43,7 @@ public class Ghost extends Entity{
 
     private void setDefaultValue() {
         direction = "down";
-        speed = 10;
+        speed = gp.tileSize;
     }
 
     private void getGhostImg() {
@@ -59,18 +59,10 @@ public class Ghost extends Entity{
 
     private void setCurrentImage() {
         switch (color) {
-            case "blue":
-                currentImage = blueGhost;
-                break;
-            case "orange":
-                currentImage = orangeGhost;
-                break;
-            case "pink":
-                currentImage = pinkGhost;
-                break;
-            case "red":
-                currentImage = redGhost;
-                break;
+            case "blue" -> currentImage = blueGhost;
+            case "orange" -> currentImage = orangeGhost;
+            case "pink" -> currentImage = pinkGhost;
+            case "red" -> currentImage = redGhost;
         }
     }
 
@@ -83,21 +75,32 @@ public class Ghost extends Entity{
     }
 
     public void update() {
-        collisionOn = false;
-        gp.cDetect.checkTile(this);
-
-        if(collisionOn == false){
-            switch (direction) {
-                case "up" -> entityY -= speed;
-                case "down" -> entityY += speed;
-                case "left" -> entityX -= speed;
-                case "right" -> entityX += speed;
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastUpdate >= 100) {
+            collisionOn = false;
+            gp.cDetect.checkTile(this);
+    
+            if(collisionOn == false){
+                switch (direction) {
+                    case "up" -> entityY -= speed;
+                    case "down" -> entityY += speed;
+                    case "left" -> entityX -= speed;
+                    case "right" -> entityX += speed;
+                }
+            } else {
+                changeDirection();
             }
+            lastUpdate = currentTime; 
         }
     }
-
+    
     private void changeDirection() {
         String[] directions = {"up", "down", "left", "right"};
-        direction = directions[random.nextInt(directions.length)];
+        String newDirection;
+        do {
+            newDirection = directions[random.nextInt(directions.length)];
+        } while (newDirection.equals(direction));
+        direction = newDirection;
     }
+    
 }

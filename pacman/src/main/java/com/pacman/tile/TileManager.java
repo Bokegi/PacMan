@@ -64,15 +64,13 @@ public class TileManager {
 
             tile[6] = new Tile(); 
             tile[6].img = null;
-
+            
             tile[7] = new Tile(); 
             tile[7].img = null;
-
+            
             tile[8] = new Tile(); 
             tile[8].img = null;
-            tile[8].collision = false;
 
-    
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -158,17 +156,4 @@ public class TileManager {
             }
         }
     }
-
-    /* public boolean checkCollision(Rectangle hitBox) {
-        int leftTile = hitBox.x / gp.tileSize;
-        int rightTile = (hitBox.x + hitBox.width) / gp.tileSize;
-        int topTile = hitBox.y / gp.tileSize;
-        int bottomTile = (hitBox.y + hitBox.height) / gp.tileSize;
-    
-        if (mapTileNum[leftTile][topTile] == 0 || mapTileNum[rightTile][topTile] == 0 ||
-            mapTileNum[leftTile][bottomTile] == 0 || mapTileNum[rightTile][bottomTile] == 0) {
-            return true; // C'è una collisione
-        }
-        return false; // Nessuna collisione
-    } */ 
 }
