@@ -76,7 +76,7 @@ public class Ghost extends Entity{
 
     public void update() {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastUpdate >= 100) {
+        if (currentTime - lastUpdate >= 300) {
             collisionOn = false;
             gp.cDetect.checkTile(this);
     
@@ -94,7 +94,43 @@ public class Ghost extends Entity{
         }
     }
     
-    private void changeDirection() {
+    public void changeDirection() {
+        switch (color) {
+            case "blue" -> changeDirectionBlue();
+            case "orange" -> changeDirectionOrange();
+            case "pink" -> changeDirectionPink();
+            case "red" -> changeDirectionRed();
+        }
+    }
+
+    private void changeDirectionBlue() {
+        // Direzione casuale
+        String[] directions = {"up", "down", "left", "right"};
+        direction = directions[random.nextInt(directions.length)];
+    }
+
+    private void changeDirectionOrange() {
+        // Cambia in ordine ciclico
+        switch (direction) {
+            case "up" -> direction = "right";
+            case "right" -> direction = "down";
+            case "down" -> direction = "left";
+            case "left" -> direction = "up";
+        }
+    }
+
+    private void changeDirectionPink() {
+        // Direzione inversa
+        switch (direction) {
+            case "up" -> direction = "down";
+            case "down" -> direction = "up";
+            case "left" -> direction = "right";
+            case "right" -> direction = "left";
+        }
+    }
+
+    private void changeDirectionRed() {
+        // Direzione casuale, ma diversa dalla corrente
         String[] directions = {"up", "down", "left", "right"};
         String newDirection;
         do {
@@ -102,5 +138,4 @@ public class Ghost extends Entity{
         } while (newDirection.equals(direction));
         direction = newDirection;
     }
-    
 }
