@@ -132,6 +132,7 @@ public class PacMan extends Entity{
                         case "right" -> entityX += speed;
                     }
                     checkFoodCollision();
+                    checkGhostCollision();
                 }
 
                 spriteCounter++;
@@ -142,5 +143,28 @@ public class PacMan extends Entity{
             }
             lastMoveTime = currentTime;
         }
+    }
+
+    public void checkGhostCollision(){
+        for(Ghost ghost : gp.tileManager.ghosts){
+            int distanceX = Math.abs(entityX - ghost.entityX);
+            int distanceY = Math.abs(entityY - ghost.entityY);
+            if(distanceX < gp.tileSize * 2 && distanceY < gp.tileSize * 2){
+                if(this.hitBox.intersects(ghost.hitBox)){
+                    System.out.println("OUCH");
+                    gp.tileManager.pacMan.resetPosition();
+                    for(Ghost g : gp.tileManager.ghosts){
+                        g.resetPosition();
+                    }
+                    gp.paused = true;
+                    gp.score -= 100;
+                }
+            }
+        }
+    }
+
+    public void resetPosition(){
+        entityX = gp.tileManager.pacManX;
+        entityY = gp.tileManager.pacManY;
     }
 }

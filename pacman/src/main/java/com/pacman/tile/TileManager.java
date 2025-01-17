@@ -28,6 +28,21 @@ public class TileManager {
     public PacMan pacMan;
     public Ghost[] ghosts;
 
+    public int pacManX;
+    public int pacManY;
+
+    public int blueGhostX;
+    public int blueGhostY;
+    public int redGhostX;
+    public int redGhostY;
+    public int yellowGhostX;
+    public int yellowGhostY;
+    public int orangeGhostX;
+    public int orangeGhostY;
+    public int pinkGhostX;
+    public int pinkGhostY;
+
+
     public Rectangle wallHitBox;  
 
     public TileManager(GamePanel gp) {
@@ -98,11 +113,26 @@ public class TileManager {
 
                     // Controlla se il numero rappresenta un'entità speciale e inizializzala
                     switch (num) {
-                        case 3 -> pacMan = new PacMan(gp, gp.keyH, col * gp.tileSize, row * gp.tileSize);
-                        case 4 -> ghosts[0] = new Ghost(gp, col * gp.tileSize, row * gp.tileSize, "blue");
-                        case 5 -> ghosts[1] = new Ghost(gp, col * gp.tileSize, row * gp.tileSize, "pink");
-                        case 6 -> ghosts[2] = new Ghost(gp, col * gp.tileSize, row * gp.tileSize, "orange");
-                        case 7 -> ghosts[3] = new Ghost(gp, col * gp.tileSize, row * gp.tileSize, "red");
+                        case 3 -> {pacMan = new PacMan(gp, gp.keyH, col * gp.tileSize, row * gp.tileSize);
+                                pacManX = col * gp.tileSize;
+                                pacManY = row * gp.tileSize;
+                                }
+                        case 4 -> {ghosts[0] = new Ghost(gp, col * gp.tileSize, row * gp.tileSize, "blue", 0);
+                                blueGhostX = col * gp.tileSize;
+                                blueGhostY = row * gp.tileSize;
+                                }
+                        case 5 -> {ghosts[1] = new Ghost(gp, col * gp.tileSize, row * gp.tileSize, "pink", 1);
+                                pinkGhostX = col * gp.tileSize;
+                                pinkGhostY = row * gp.tileSize;
+                                }
+                        case 6 -> {ghosts[2] = new Ghost(gp, col * gp.tileSize, row * gp.tileSize, "orange", 2);
+                                    orangeGhostX = col * gp.tileSize;
+                                    orangeGhostY = row * gp.tileSize;
+                                }
+                        case 7 -> {ghosts[3] = new Ghost(gp, col * gp.tileSize, row * gp.tileSize, "red", 3);
+                                    redGhostX = col * gp.tileSize;
+                                    redGhostY = row * gp.tileSize;
+                                }
                     }
                     col++;
                 }

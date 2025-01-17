@@ -27,11 +27,14 @@ public class Ghost extends Entity{
 
     private long lastUpdate;
 
-    public Ghost(GamePanel gp, int startX, int startY, String color) {
+    private int index;
+
+    public Ghost(GamePanel gp, int startX, int startY, String color, int index) {
         this.gp = gp;
         this.entityX = startX;
         this.entityY = startY;
         this.color = color;
+        this.index = index;
         this.random = new Random();
         hitBox = new Rectangle(0, 0, 20, 20);
 
@@ -138,4 +141,25 @@ public class Ghost extends Entity{
         } while (newDirection.equals(direction));
         direction = newDirection;
     }
+
+    public void resetPosition(){
+    switch (index) {
+        case 0 -> {
+            entityX = gp.tileManager.blueGhostX;
+            entityY = gp.tileManager.blueGhostY;
+        }
+        case 1 -> {
+            entityX = gp.tileManager.pinkGhostX;
+            entityY = gp.tileManager.pinkGhostY;
+        }
+        case 2 -> {
+            entityX = gp.tileManager.orangeGhostX;
+            entityY = gp.tileManager.orangeGhostY;
+        }
+        case 3 -> {
+            entityX = gp.tileManager.redGhostX;
+            entityY = gp.tileManager.redGhostY;
+        }
+    }
+}
 }
