@@ -20,14 +20,15 @@ public class Ghost extends Entity{
 
     private BufferedImage blueGhost, orangeGhost, pinkGhost, redGhost;
     private BufferedImage currentImage;
-    private String color;
+    private final String color;
 
     GamePanel gp;
-    private Random random;
+    private final Random random;
 
     private long lastUpdate;
+    private boolean isRemoved = false;
 
-    private int index;
+    private final int index;
 
     public Ghost(GamePanel gp, int startX, int startY, String color, int index) {
         this.gp = gp;
@@ -143,23 +144,31 @@ public class Ghost extends Entity{
     }
 
     public void resetPosition(){
-    switch (index) {
-        case 0 -> {
-            entityX = gp.tileManager.blueGhostX;
-            entityY = gp.tileManager.blueGhostY;
-        }
-        case 1 -> {
-            entityX = gp.tileManager.pinkGhostX;
-            entityY = gp.tileManager.pinkGhostY;
-        }
-        case 2 -> {
-            entityX = gp.tileManager.orangeGhostX;
-            entityY = gp.tileManager.orangeGhostY;
-        }
-        case 3 -> {
-            entityX = gp.tileManager.redGhostX;
-            entityY = gp.tileManager.redGhostY;
+        switch (index) {
+            case 0 -> {
+                entityX = gp.tileManager.blueGhostX;
+                entityY = gp.tileManager.blueGhostY;
+            }
+            case 1 -> {
+                entityX = gp.tileManager.pinkGhostX;
+                entityY = gp.tileManager.pinkGhostY;
+            }
+            case 2 -> {
+                entityX = gp.tileManager.orangeGhostX;
+                entityY = gp.tileManager.orangeGhostY;
+            }
+            case 3 -> {
+                entityX = gp.tileManager.redGhostX;
+                entityY = gp.tileManager.redGhostY;
+            }
         }
     }
-}
+
+    public void removeGhost() {
+        isRemoved = true;
+    }
+
+    public boolean isRemoved() {
+        return isRemoved;
+    }
 }

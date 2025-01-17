@@ -21,14 +21,14 @@ public class PacMan extends Entity{
 
     private BufferedImage pacManDown, pacManUp, pacManLeft, pacManRight, pacManClose;
 
-    private int hP;
+    public int hP;
 
     private final GamePanel gp;
     private final KeyHandler keyH;
 
-    private boolean isMoving;
     private boolean isDead;
-    private int targetX, targetY;
+    private boolean powerFoodActive = false;
+    private long powerFoodTime;
 
     private long lastMoveTime;
     
@@ -38,9 +38,6 @@ public class PacMan extends Entity{
 
         this.entityX = startX;
         this.entityY = startY;
-
-        /* this.targetX = startX;
-        this.targetY = startY; */
 
         hitBox = new Rectangle(0, 0, 20, 20);
 
@@ -53,7 +50,6 @@ public class PacMan extends Entity{
         hP = 3;
         speed = gp.tileSize;  // Imposta la velocità pari alla dimensione di una casella
         direction = "right";
-        isMoving = false;
     }
 
     private void getPlayerImg() {
@@ -88,7 +84,7 @@ public class PacMan extends Entity{
         g2.drawImage(img, entityX, entityY, gp.tileSize, gp.tileSize, null);
     }
 
-    private void checkFoodCollision() {
+    public void checkFoodCollision() {
 
         int col = (entityX + hitBox.x) / gp.tileSize;
         int row = (entityY + hitBox.y) / gp.tileSize;
@@ -97,10 +93,12 @@ public class PacMan extends Entity{
             gp.tileManager.mapTileNum[col][row] = 8;  // Rimuove il cibo
             gp.score += 10;  // Incrementa il punteggio
             System.out.println("Score: " + gp.score);  // Stampa il punteggio per debug
-        }else if (gp.tileManager.mapTileNum[col][row] == 2) {  // 2 = powerFood
+        } else if (gp.tileManager.mapTileNum[col][row] == 2) {  // 2 = powerFood
             gp.tileManager.mapTileNum[col][row] = 8;  // Rimuove il cibo
             gp.score += 50;  // Incrementa il punteggio
             System.out.println("Score: " + gp.score);  // Stampa il punteggio per debug
+            powerFoodActive = true;
+            powerFoodTime = System.currentTimeMillis();
         }
     }
 
@@ -140,6 +138,12 @@ public class PacMan extends Entity{
                     spriteNum = (spriteNum == 1) ? 2 : 1;
                     spriteCounter = 0;
                 }
+                if(powerFoodActive == true){
+                    long foodTimer = System.currentTimeMillis();
+                    if(foodTimer - powerFoodTime >= 1500){
+                        powerFoodActive = false;
+                    }
+                }
             }
             lastMoveTime = currentTime;
         }
@@ -151,20 +155,41 @@ public class PacMan extends Entity{
             int distanceY = Math.abs(entityY - ghost.entityY);
             if(distanceX < gp.tileSize * 2 && distanceY < gp.tileSize * 2){
                 if(this.hitBox.intersects(ghost.hitBox)){
-                    System.out.println("OUCH");
-                    gp.tileManager.pacMan.resetPosition();
-                    for(Ghost g : gp.tileManager.ghosts){
-                        g.resetPosition();
+                    if (powerFoodActive) {
+                        gp.score += 100;  // Incrementa il punteggio
+                        System.out.println("Score: " + gp.score);  // Stampa il punteggio per debug
+                        ghost.resetPosition();
+                        ghost.removeGhost();
+                    } else {
+                        System.out.println("OUCH");
+                        hP--;
+                        if (hP <= 0) {
+                            resetLevel();
+                        } else {
+                            gp.tileManager.pacMan.resetPosition();
+                            for(Ghost g : gp.tileManager.ghosts){
+                                g.resetPosition();
+                            }
+                            gp.paused = true; // Imposta il gioco in pausa
+                        }
                     }
-                    gp.paused = true;
-                    gp.score -= 100;
                 }
             }
         }
     }
-
     public void resetPosition(){
         entityX = gp.tileManager.pacManX;
         entityY = gp.tileManager.pacManY;
+    }
+
+    public void resetLevel() {
+        gp.tileManager.loadMap("pacman/res/Map/Map01.txt");
+        gp.score = 0;
+        hP = 3;
+        gp.tileManager.pacMan.resetPosition();
+        for(Ghost g : gp.tileManager.ghosts){
+            g.resetPosition();
+        }
+        gp.paused = true; // Imposta il gioco in pausa
     }
 }

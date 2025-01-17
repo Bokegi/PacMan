@@ -181,7 +181,7 @@ public class TileManager {
         
         // Disegna i fantasmi se non sono nulli
         for (Ghost ghost : ghosts) {
-            if (ghost != null) {
+            if (ghost != null && ghost.isRemoved() == false) {
                 ghost.draw(g2);
             }
         }

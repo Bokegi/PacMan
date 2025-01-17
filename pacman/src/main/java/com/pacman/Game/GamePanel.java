@@ -77,14 +77,14 @@ public class GamePanel extends JPanel implements Runnable{
         if (keyH.spacePressed && !gameStarted) {
             gameStarted = true;
             paused = false; // Assicura che il gioco non sia in pausa all'inizio
-            keyH.spacePressed = false; // Resetta subito il tasto SPAZIO
+            keyH.spacePressed = false; // Resetta il tasto SPAZIO
         }
         if (keyH.spacePressed && gameStarted && !paused) {
             paused = true;
-            keyH.spacePressed = false; // Resetta subito il tasto SPAZIO
+            keyH.spacePressed = false;
         } else if (keyH.spacePressed && gameStarted && paused) {
             paused = false;
-            keyH.spacePressed = false; // Resetta subito il tasto SPAZIO
+            keyH.spacePressed = false;
         }
         if (gameStarted && !paused) {
             tileManager.pacMan.update();
@@ -104,7 +104,11 @@ public class GamePanel extends JPanel implements Runnable{
         tileManager.pacMan.draw(g2);
 
         g2.setColor(Color.WHITE);
-        g2.drawString("Score: " + score, 10, 20);
+        g2.setFont(new Font("Arial", Font.BOLD, 24)); // Imposta il font in grassetto
+        String scoreText = "Score: " + score;
+        String hpText = "HP: " + tileManager.pacMan.hP;
+        g2.drawString(scoreText, 0, 25); // Posiziona lo score in alto a sinistra
+        g2.drawString(hpText, 530, 25); // Posiziona gli HP a destra dello score
 
         // Controlla se il gioco è in pausa e se è stato avviato per disegnare la scritta
         if (gameStarted && paused) {
@@ -116,7 +120,6 @@ public class GamePanel extends JPanel implements Runnable{
             int y = (screenHeight - stringHeight) / 2 + stringHeight;
             g2.drawString(pausedText, x, y);
         }
-
         g2.dispose();
     }
 }
