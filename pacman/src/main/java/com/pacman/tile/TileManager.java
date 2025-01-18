@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 
 import javax.imageio.ImageIO;
 
+import com.pacman.Exception.ImageLoadException;
 import com.pacman.Game.GamePanel;
 import com.pacman.entity.Ghost;
 import com.pacman.entity.PacMan;
@@ -45,7 +46,7 @@ public class TileManager {
 
     public Rectangle wallHitBox;  
 
-    public TileManager(GamePanel gp) {
+    public TileManager(GamePanel gp){
         this.gp = gp;
         tile = new Tile[10];
         mapTileNum = new int[gp.screenCol][gp.screenRow];
@@ -56,7 +57,7 @@ public class TileManager {
         wallHitBox = new Rectangle(0, 0, 10, 10); 
     }
 
-    private void getTileImg() {
+    private void getTileImg(){
         try {
             tile[0] = new Tile(); // Wall
             tile[0].img = ImageIO.read(new File(wallPath));
@@ -87,7 +88,8 @@ public class TileManager {
             tile[8].img = null;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            //throw new ImageLoadException("Impossibile caricare l'immagine" + e.getMessage());
+            System.out.println("Impossibile caricare l'immagine");
         }
     }
     
