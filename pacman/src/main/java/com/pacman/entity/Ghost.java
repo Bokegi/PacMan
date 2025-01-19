@@ -37,7 +37,6 @@ public class Ghost extends Entity{
         this.color = color;
         this.index = index;
         this.random = new Random();
-        hitBox = new Rectangle(0, 0, 20, 20);
 
         setDefaultValue();
         getGhostImg();
@@ -48,6 +47,7 @@ public class Ghost extends Entity{
     private void setDefaultValue() {
         direction = "down";
         speed = gp.tileSize;
+        hitBox = new Rectangle(0, 0, 20, 20);
     }
 
     private void getGhostImg() {
@@ -162,10 +162,12 @@ public class Ghost extends Entity{
                 entityY = gp.tileManager.redGhostY;
             }
         }
+        setDefaultValue();
     }
 
     public void removeGhost() {
         isRemoved = true;
+        hitBox= new Rectangle(0, 0, 0, 0);
     }
 
     public boolean isRemoved() {

@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 
 import javax.imageio.ImageIO;
 
-import com.pacman.Exception.ImageLoadException;
 import com.pacman.Game.GamePanel;
 import com.pacman.entity.Ghost;
 import com.pacman.entity.PacMan;
@@ -187,5 +186,27 @@ public class TileManager {
                 ghost.draw(g2);
             }
         }
+    }
+
+    public boolean isLevelComplete() {
+        for (int col = 0; col < gp.screenCol; col++) {
+            for (int row = 0; row < gp.screenRow; row++) {
+                if (mapTileNum[col][row] == 1 || mapTileNum[col][row] == 2) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    public void resetLevel() {
+        gp.tileManager.loadMap("pacman/res/Map/Map01.txt");
+        gp.score = 0;
+        pacMan.hP = 3;
+        pacMan.resetPosition();
+        for(Ghost g : gp.tileManager.ghosts){
+            g.resetPosition();
+        }
+        gp.paused = true; 
     }
 }

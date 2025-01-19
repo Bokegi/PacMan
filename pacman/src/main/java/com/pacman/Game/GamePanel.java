@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.pacman.entity.Ghost;
@@ -24,6 +26,9 @@ public class GamePanel extends JPanel implements Runnable{
 
     public boolean gameStarted = false;
     public boolean paused = false;
+    public boolean levelComplete = false;
+    public boolean gameOver = false;
+    private boolean nameEntered = false;
 
     int fps = 60;
     public int score = 0;
@@ -32,6 +37,7 @@ public class GamePanel extends JPanel implements Runnable{
     public TileManager tileManager;
     Thread gameThread;
     public CollisionDetecter cDetect;
+    Leaderboard leaderboard;
 
     public GamePanel() {
 
@@ -43,6 +49,7 @@ public class GamePanel extends JPanel implements Runnable{
         this.setFocusable(true);
         tileManager = new TileManager(this);
         cDetect = new CollisionDetecter(this);
+        leaderboard = new Leaderboard();
     }
 
     public void startGameThread() {
@@ -67,6 +74,7 @@ public class GamePanel extends JPanel implements Runnable{
 
             if (delta >= 1) {
                 update();
+                checkLeaderboard();
                 repaint();
                 delta--;
             }
@@ -78,6 +86,7 @@ public class GamePanel extends JPanel implements Runnable{
             gameStarted = true;
             paused = false; // Assicura che il gioco non sia in pausa all'inizio
             keyH.spacePressed = false; // Resetta il tasto SPAZIO
+            score = 0;
         }
         if (keyH.spacePressed && gameStarted && !paused) {
             paused = true;
@@ -86,6 +95,24 @@ public class GamePanel extends JPanel implements Runnable{
             paused = false;
             keyH.spacePressed = false;
         }
+        if (levelComplete && (keyH.yPressed || keyH.nPressed)) {
+            if (keyH.yPressed) {
+                resetGame();
+            } else if (keyH.nPressed) {
+                returnToMainMenu();
+            }
+            keyH.yPressed = false;
+            keyH.nPressed = false;
+        }
+        if (gameOver && (keyH.yPressed || keyH.nPressed)) {
+            if (keyH.yPressed) {
+                resetGame();
+            } else if (keyH.nPressed) {
+                returnToMainMenu();
+            }
+            keyH.yPressed = false;
+            keyH.nPressed = false;
+        }
         if (gameStarted && !paused) {
             tileManager.pacMan.update();
             for (Ghost ghost : tileManager.ghosts) {
@@ -93,6 +120,7 @@ public class GamePanel extends JPanel implements Runnable{
             }
         }
     }
+    
 
     @Override
     public void paintComponent(Graphics g) {
@@ -101,25 +129,87 @@ public class GamePanel extends JPanel implements Runnable{
         Graphics2D g2 = (Graphics2D) g;
 
         tileManager.draw(g2);
-        tileManager.pacMan.draw(g2);
 
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.BOLD, 24)); // Imposta il font in grassetto
-        String scoreText = "Score: " + score;
+        g2.setFont(new Font("Arial", Font.BOLD, 24));
+        String scoreText = "SCORE: " + score;
         String hpText = "HP: " + tileManager.pacMan.hP;
-        g2.drawString(scoreText, 0, 25); // Posiziona lo score in alto a sinistra
-        g2.drawString(hpText, 530, 25); // Posiziona gli HP a destra dello score
+        g2.drawString(scoreText, 0, 25);
+        g2.drawString(hpText, screenWidth - 100, 25);
 
-        // Controlla se il gioco è in pausa e se è stato avviato per disegnare la scritta
-        if (gameStarted && paused) {
+        if (gameStarted && paused && !levelComplete && !gameOver) {
+            g2.setFont(new Font("Arial", Font.BOLD, 40));
             String pausedText = "GAME PAUSED";
-            g2.setFont(new Font("Arial", Font.BOLD, 40)); // Imposta il font
             int stringWidth = g2.getFontMetrics().stringWidth(pausedText);
-            int stringHeight = g2.getFontMetrics().getHeight();
             int x = (screenWidth - stringWidth) / 2;
-            int y = (screenHeight - stringHeight) / 2 + stringHeight;
+            int y = screenHeight / 2;
             g2.drawString(pausedText, x, y);
         }
+
+        if (levelComplete) {
+            g2.setFont(new Font("Arial", Font.BOLD, 40));
+            String levelCompleteText = "LEVEL COMPLETE";
+            int stringWidth = g2.getFontMetrics().stringWidth(levelCompleteText);
+            int x = (screenWidth - stringWidth) / 2;
+            int y = screenHeight / 2;
+            g2.drawString(levelCompleteText, x, y);
+            
+            String playAgain = "Nuova Partita? Y, N";
+            stringWidth = g2.getFontMetrics().stringWidth(playAgain);
+            x = (screenWidth - stringWidth) / 2;
+            y = screenHeight / 2 + 50;
+            g2.drawString(playAgain, x, y);
+        }
+
+        if (gameOver) { 
+            g2.setFont(new Font("Arial", Font.BOLD, 40)); 
+            String gameOverText = "GAME OVER"; 
+            int stringWidth = g2.getFontMetrics().stringWidth(gameOverText); 
+            int x = (screenWidth - stringWidth) / 2; 
+            int y = screenHeight / 2 - 40; 
+            g2.drawString(gameOverText, x, y); 
+
+            String playAgainText = "Nuova Partita? Y, N"; 
+            stringWidth = g2.getFontMetrics().stringWidth(playAgainText); 
+            x = (screenWidth - stringWidth) / 2; 
+            y = screenHeight / 2 + 20; 
+            g2.drawString(playAgainText, x, y);
+        }
+
         g2.dispose();
     }
+
+
+    public void resetGame() {
+        levelComplete = false;
+        score = 0;
+        tileManager.resetLevel();
+    }
+    
+    private void checkLeaderboard(){
+        if(levelComplete || gameOver){
+            if(nameEntered == false){
+                String playerName = JOptionPane.showInputDialog("Immetti Nome: ");
+                leaderboard.addScore(playerName, score);
+                nameEntered = true;
+            }
+        }
+    }
+
+    private void returnToMainMenu() {
+        // Ferma il thread del gioco
+        gameThread = null;
+    
+        // Chiude e distrugge il frame del gioco
+        JFrame parentFrame = (JFrame) this.getTopLevelAncestor();
+        if (parentFrame != null) {
+            parentFrame.dispose();
+        }
+    
+        // Crea e mostra il nuovo menu principale
+        MenuPage menuPage = new MenuPage();
+        menuPage.setVisible(true);
+    }
+    
+
 }

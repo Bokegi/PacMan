@@ -131,6 +131,10 @@ public class PacMan extends Entity{
                     }
                     checkFoodCollision();
                     checkGhostCollision();
+
+                    if(gp.tileManager.isLevelComplete()){
+                        gp.levelComplete = true;
+                    }
                 }
 
                 spriteCounter++;
@@ -158,13 +162,13 @@ public class PacMan extends Entity{
                     if (powerFoodActive) {
                         gp.score += 100;  // Incrementa il punteggio
                         System.out.println("Score: " + gp.score);  // Stampa il punteggio per debug
-                        ghost.resetPosition();
                         ghost.removeGhost();
                     } else {
                         System.out.println("OUCH");
                         hP--;
                         if (hP <= 0) {
-                            resetLevel();
+                            gp.gameOver = true;
+                            gp.tileManager.resetLevel();
                         } else {
                             gp.tileManager.pacMan.resetPosition();
                             for(Ghost g : gp.tileManager.ghosts){
@@ -173,23 +177,15 @@ public class PacMan extends Entity{
                             gp.paused = true; // Imposta il gioco in pausa
                         }
                     }
+                    return;
                 }
             }
         }
     }
+
     public void resetPosition(){
         entityX = gp.tileManager.pacManX;
         entityY = gp.tileManager.pacManY;
     }
 
-    public void resetLevel() {
-        gp.tileManager.loadMap("pacman/res/Map/Map01.txt");
-        gp.score = 0;
-        hP = 3;
-        gp.tileManager.pacMan.resetPosition();
-        for(Ghost g : gp.tileManager.ghosts){
-            g.resetPosition();
-        }
-        gp.paused = true; // Imposta il gioco in pausa
-    }
 }
